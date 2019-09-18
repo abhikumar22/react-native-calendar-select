@@ -2,8 +2,13 @@
  * Created by TinySymphony on 2017-05-08.
  */
 
-import React, { Component } from 'react';
+import React, { Component, } from 'react';
+import { BackHandler, Platform } from 'react-native';
+
 import PropTypes from 'prop-types';
+import LinearGradient from 'react-native-linear-gradient';
+import DeviceInfo from 'react-native-device-info';
+
 
 import {
   View,
@@ -13,11 +18,13 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
-  TouchableHighlight
+  TouchableHighlight,
+  TouchableOpacity
 } from 'react-native';
 import Moment from 'moment';
 import styles from './CalendarStyle';
 import MonthList from './MonthList';
+const Font_Family = 'CenturyGothic';
 const ICON = {
   close: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAADGklEQVR4Xu3b3XXTMBTAcV1Leu8I3YAyAWECygSlE9BOQJmAdAK6QWGCphNQNmAE+mzZl6Mc5xzXtiLJ1r0STfLqJM3/Z9muPwTiwF9w4P3iCHAcAQ4BRDxt2/aDEOKkqqqfAPD0P2EZYy6EEJ/sbwaATVVVtwDwd9gwuQkYY+wHv9n43QcQca21vi4dARFPmqa5F0Ks+r8VEZ+UUu+HCCMAu+abpvnVj+990Z1S6rJUBBtvjHkAgLOp34iIX7XWN/1lI4Cmaa4Q0a5916tIBF+8jUHER631i5ExAqjr+gYAvnjWclEIIfHBAIh41m0CvpFeBEJofBdzqZS627sJ2IV1Xa8B4LNPQAiRFSEmfmr4b48QrkhjjJWyhxLfKwtCZPxvpdQq+DC4Ky4VIVX83hFQKkLK+CAA+6ZSRkLq+GCAEhAo4qMAciJQxUcD5ECgjJ8FwIlAHT8bgAOBI34RACUCV/xiAAoEzvgkACkRuOOTAaRAyBGfFGAJQq745ABzEHLGkwDEItgLMK5reP3zcER0ntL6ztf3LSe7MRJxAuX9/VTxZCNgxqm0E4EynhwgcnMYIVDHswDMReCIZwOIReCKZwOIOdR12wHbhVayo8Bug54Rv/soCwIpwIJ4NgQygATxLAgkAAnjyRGSA8TE27199+BFtjtQSQFi43e3qyL+bU6+Y0wGMDd+xr/NSRGSACyNz4mwGCBVfC6ERQCp43MgzAagiudGmAVAHc+JEA3AFc+FEAXAHc+BEAyQK54aIQggdzwlgheglHgqhL0ApcVTIDgBSo1PjTAJUHp8SgTXfIGH4fP2U3cuOK/euu6chJ5KI+Kt1vpq+D0jgG6yxHfnrZpuQQnxsSNBSvl2OPNl6nH5DQC82wdQUnwMAgBcSynX/bZogBLjIxA+KqV++ACcEyZKjg9AeJZSnobMGbLzbuxm8KYvZZ+3V0qdTz1y7ttfcC+fmO/wjIjnWuuNdydo39AdBu0eczu/BgDsdbgXMy24o2L/nn3wom3bFSL+kVLaFTqaMrdti/3i1/b+I8BrW6OxPQc/Av4BDSZYbnPWwJkAAAAASUVORK5CYII='
 };
@@ -28,7 +35,7 @@ export default class Calendar extends Component {
     customI18n: PropTypes.object,
     color: PropTypes.object,
     minDate: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
-    maxDate: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)])
+    maxDate: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
   }
   static defaultProps = {
     format: 'YYYY-MM-DD',
@@ -74,10 +81,12 @@ export default class Calendar extends Component {
       'date': 'M月D日'
     }
   }
-  constructor (props) {
+
+  constructor(props) {
+    console.warn("**calender**")
     super(props);
     this.state = {
-      isModalVisible: false
+      isModalVisible: false,
     };
     this._today = Moment();
     this._year = this._today.year();
@@ -91,11 +100,58 @@ export default class Calendar extends Component {
     this.clear = this.clear.bind(this);
     this.confirm = this.confirm.bind(this);
     this._getDateRange();
+
+
+
+    const {
+      primaryColor, secondaryColor, todayColor
+    } = this.props;
+
+    this.primaryColor = primaryColor
+    this.secondaryColor = secondaryColor
+    this.todayColor = todayColor
+
+    if (this.primaryColor === undefined) {
+      this.primaryColor = '#03b8c1'
+    }
+    if (this.secondaryColor === undefined) {
+      this.secondaryColor = '#c6fcff'
+    }
+    if (this.todayColor === undefined) {
+      this.todayColor = '#c9edef'
+    }
+
+    // console.warn("fontName",fontName)
+
+
+
+    // if (this.primaryColor === undefined && this.secondaryColor === undefined && this.todayColor === undefined) {
+    //   this.primaryColor = '#03b8c1'
+    //   this.secondaryColor = '#c6fcff'
+    //   this.todayColor = '#c9edef'
+    //   console.warn("*primaryColor", primaryColor)
+    //   console.warn("*secondaryColor", secondaryColor)
+    //   console.warn("*todayColor", todayColor)
+    // } else {
+    //   console.warn("primaryColor", primaryColor)
+    //   console.warn("secondaryColor", secondaryColor)
+    //   console.warn("todayColor", todayColor)
+    // }
+
+
+
   }
-  componentDidMount () {
+  componentDidMount() {
+    // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     this._resetCalendar();
   }
-  _i18n (data, type) {
+
+  componentWillUnmount() {
+
+  }
+
+
+  _i18n(data, type) {
     const {
       i18n,
       customI18n
@@ -107,26 +163,32 @@ export default class Calendar extends Component {
       return data.format(customI18n[type] || Calendar.I18N_MAP[i18n][type]);
     }
   }
-  _resetCalendar () {
+  _resetCalendar() {
     const {
       startDate,
       endDate,
-      format
+      format,
+      type,
     } = this.props;
     let start = Moment(startDate, format);
     let end = Moment(endDate, format);
+    console.warn("start**", start)
+    console.warn("end**", end)
+    console.warn("type", type)
+
     let isStartValid = start.isValid() && start >= this._minDate && start <= this._maxDate;
     let isEndValid = end.isValid() && end >= this._minDate && end <= this._maxDate;
     this.setState({
+      type: type,
       startDate: isStartValid ? start : null,
       startDateText: isStartValid ? this._i18n(start, 'date') : '',
       startWeekdayText: isStartValid ? this._i18n(start.isoWeekday(), 'weekday') : '',
-      endDate: isEndValid ? end: null,
+      endDate: isEndValid ? end : null,
       endDateText: isEndValid ? this._i18n(end, 'date') : '',
       endWeekdayText: isEndValid ? this._i18n(end.isoWeekday(), 'weekday') : ''
     });
   }
-  _getDateRange () {
+  _getDateRange() {
     const {
       maxDate,
       minDate,
@@ -150,7 +212,7 @@ export default class Calendar extends Component {
     this._minDate = min;
     this._maxDate = max;
   }
-  _onChoose (day) {
+  _onChoose(day) {
     const {
       startDate,
       endDate
@@ -172,21 +234,24 @@ export default class Calendar extends Component {
       });
     }
   }
-  cancel () {
+  cancel() {
     this.close();
     this._resetCalendar();
   }
-  close () {
+  close() {
     this.setState({
       isModalVisible: false
     });
+    this._resetCalendar()
   }
-  open () {
+  open() {
+    this._resetCalendar()
     this.setState({
       isModalVisible: true
     });
+
   }
-  clear () {
+  clear() {
     this.setState({
       startDate: null,
       endDate: null,
@@ -196,7 +261,7 @@ export default class Calendar extends Component {
       endWeekdayText: ''
     });
   }
-  confirm () {
+  confirm() {
     const {
       startDate,
       endDate
@@ -209,9 +274,12 @@ export default class Calendar extends Component {
       startMoment,
       endMoment
     });
-    this.close();
+      this.close();
+
+
+
   }
-  render () {
+  render() {
     const {
       startDate,
       endDate,
@@ -221,15 +289,30 @@ export default class Calendar extends Component {
       endWeekdayText
     } = this.state;
     const {
-      mainColor = '#15aaaa',
-      subColor = '#fff',
-      borderColor = 'rgba(255, 255, 255, 0.50)'
+      mainColor = this.primaryColor, //background color
+      subColor = this.secondaryColor,
+      borderColor = this.primaryColor,
+      todayColor = this.todayColor,
     } = this.props.color;
-    let color = {mainColor, subColor, borderColor};
-    let mainBack = {backgroundColor: mainColor};
-    let subBack = {backgroundColor: subColor};
-    let mainFontColor = {color: mainColor};
-    let subFontColor = {color: subColor};
+    let color = { mainColor, subColor, borderColor, todayColor };
+
+    // const {
+    //   mainColor1 = 'blue', //background color
+    //   subColor1 = 'green',
+    //   borderColor1 = 'red'
+    // } = this.props.color;
+    // let color = { mainColor1, subColor1, borderColor1 };
+
+
+
+
+    let mainBack = { backgroundColor: mainColor };
+    let subBack = { backgroundColor: subColor };
+    let mainFontColor = { color: mainColor };
+    // let subFontColor = { color: 'black' };
+    let monthColor = { color: this.primaryColor };
+    let continueColorActive = { color: 'white' }
+    let continueColorDisabled = { color: 'rgb(173, 173, 173)' }
     let isValid = !startDate || endDate;
     let isClearVisible = startDate || endDate;
     return (
@@ -237,49 +320,83 @@ export default class Calendar extends Component {
         animationType={'slide'}
         visible={this.state.isModalVisible}
         onRequestClose={this.close}>
-        <View style={[styles.container, mainBack]}>
-          <View style={styles.ctrl}>
-            <TouchableHighlight
-              underlayColor="transparent"
-              onPress={this.cancel}
-              >
-              <Image
-                style={styles.closeIcon}
-                source={{uri: ICON.close}}
-                resizeMode="cover"/>
-            </TouchableHighlight>
-            {isClearVisible && <TouchableHighlight
-              underlayColor="transparent"
-              activeOpacity={0.8}
-              onPress={this.clear}>
-              <Text style={[styles.clearText, subFontColor]}>{this._i18n('clear', 'text')}</Text>
-            </TouchableHighlight>}
+
+
+        <View style={styles.container}>
+          <View style={{ backgroundColor: this.primaryColor, width: '100%', marginBottom: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 15 }}>
+
+            <TouchableOpacity
+              style={{ position: 'absolute', left: 5, padding: 15 }}
+              onPress={() => {
+                console.warn("back pressed")
+                this.close();
+              }}
+            >
+              <Text style={ {color: 'white' }}> {this._i18n('Cancel', 'text')}</Text>
+            </TouchableOpacity>
+            <Text style={{ alignSelf: 'center', fontSize: 20, color: 'white', }}>{this._i18n('statusBar', 'text')}</Text>
+            <TouchableOpacity
+              style={{ position: 'absolute', right: 10, padding: 10 }}
+              onPress={() => {
+                console.warn("Reset Pressed")
+                // this.close()
+                this._resetCalendar()
+              }}
+            >
+
+              <Text
+                style={{ color: 'white' }}>
+                {this._i18n('clear', 'text')}
+              </Text>
+            </TouchableOpacity>
+
           </View>
+
+          {/* <View style={[styles.container, mainBack]}> */}
+
           <View style={styles.result}>
             <View style={styles.resultPart}>
-              <Text style={[styles.resultText, styles.startText, subFontColor]}>
-                {startDateText || this._i18n('start', 'text')}
-              </Text>
-              <Text style={[styles.resultText, styles.startText, subFontColor]}>
-                {startWeekdayText || this._i18n('date', 'text')}
+              <View style={{ flexDirection: 'row' }}>
+                <Image
+                  source={require('../../app/assets/calender_icon.png')}
+                  style={{ alignSelf: 'center' }}
+                />
+                <Text style={{ marginLeft: 4, fontFamily: Font_Family, color: 'rgb(35, 35, 35)', fontSize: 10 }}>
+                  {this._i18n('start', 'text')}
+                </Text>
+              </View>
+
+              <Text style={{ marginLeft: 4, fontFamily: Font_Family, color: this.state.startDate === null ? 'rgb(146, 146, 146)' : this.primaryColor, fontSize: this.state.startDate === null ? 10 : 14 }}>
+                {startDateText || this._i18n('date', 'text')}
               </Text>
             </View>
-            <View style={[styles.resultSlash, subBack]}/>
-            <View style={styles.resultPart}>
-              <Text style={[styles.resultText, styles.endText, subFontColor]}>
-                {endDateText || this._i18n('end', 'text')}
-              </Text>
-              <Text style={[styles.resultText, styles.endText, subFontColor]}>
-                {endWeekdayText || this._i18n('date', 'text')}
+            {/* <View style={[styles.resultSlash, subBack]}/> */}
+            <View style={styles.resultPart2}>
+
+              <View style={{ flexDirection: 'row' }}>
+                <Image
+                  source={require('../../app/assets/calender_icon.png')}
+                  style={{ alignSelf: 'center' }}
+                />
+                <Text style={{ marginLeft: 4, fontFamily: Font_Family, color: 'rgb(35, 35, 35)', fontSize: 10, }}>
+                  {this._i18n('end', 'text')}
+                </Text>
+              </View>
+
+
+              <Text style={{ marginLeft: 4, fontFamily: Font_Family, color: this.state.endDate === null ? 'rgb(146, 146, 146)' : this.primaryColor, fontSize: this.state.endDate === null ? 10 : 14 }}>
+                {endDateText || this._i18n('date', 'text')}
               </Text>
             </View>
           </View>
+          <View style={{ width: '100%', height: 1, backgroundColor: this.primaryColor }}></View>
           <View style={styles.week}>
             {[7, 1, 2, 3, 4, 5, 6].map(item =>
-              <Text style={[styles.weekText, subFontColor]}　key={item}>{this._i18n(item, 'w')}</Text>
+              <Text style={[styles.weekText, monthColor]} key={item}>{this._i18n(item, 'w')}</Text>
             )}
           </View>
-          <View style={[styles.scroll, {borderColor}]}>
+
+          <View style={[styles.scroll, { borderColor }]}>
             <MonthList
               today={this._today}
               minDate={this._minDate}
@@ -291,27 +408,48 @@ export default class Calendar extends Component {
               color={color}
             />
           </View>
-          <View style={styles.btn}>
-            {isValid ?
+          <View style={[styles.btn]}>
+            {startDateText && endDateText ?
               <TouchableHighlight
                 underlayColor="rgba(255, 255, 255, 0.45)"
-                style={styles.confirmContainer}
-                onPress={this.confirm}>
-                <View style={styles.confirmBtn}>
+                style={[styles.confirmContainer, { backgroundColor: this.primaryColor, marginBottom: Platform.OS === 'ios' && DeviceInfo.hasNotch() ? 20 : 0 }]}
+                onPress={() => {
+                  // this.confirm()
+                  // this.props.navigation.navigate('HotelListScreen')
+                  // console.warn("continue pressed")
+                  this.confirm()
+                  // this.props.navigation.navigate('HotelListScreen')
+                  // this.close()
+                }
+
+                }>
+                {/* onPress={this.confirm}> */}
+
+                <View style={{ flexDirection: 'row' }} >
                   <Text
                     ellipsisMode="tail" numberOfLines={1}
-                    style={[styles.confirmText, subFontColor]}>
+                    style={[styles.confirmText, continueColorActive]}>
                     {this._i18n('save', 'text')}
                   </Text>
+                  <Image
+                    style={{ marginLeft: 10, alignSelf: 'center' }}
+                    source={require('../../app/assets/continueActive.png')}
+                  />
                 </View>
               </TouchableHighlight> :
-              <View style={[styles.confirmContainer, styles.confirmContainerDisabled]}>
-                <View style={styles.confirmBtn}>
+              <View style={[styles.confirmContainer, styles.confirmContainerDisabled, { marginBottom: Platform.OS === 'ios' && DeviceInfo.hasNotch() ? 20 : 0 }]}>
+                <View style={{ flexDirection: 'row' }} >
                   <Text
                     ellipsisMode="tail" numberOfLines={1}
-                    style={[styles.confirmText, styles.confirmTextDisabled]}>
+                    style={[styles.confirmText, , continueColorDisabled]}
+                  >
                     {this._i18n('save', 'text')}
                   </Text>
+                  <Image
+                    style={{ marginLeft: 10, alignSelf: 'center' }}
+                    source={require('../../app/assets/continueDeactivated.png')}
+                  />
+
                 </View>
               </View>
             }

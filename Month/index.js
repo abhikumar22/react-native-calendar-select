@@ -4,6 +4,7 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { strings } from '../../../src/i18n'
 
 import {
   View,
@@ -16,7 +17,7 @@ import styles from './style';
 import Day from '../Day';
 
 export default class Month extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this._getDayList = this._getDayList.bind(this);
     this._renderDayRow = this._renderDayRow.bind(this);
@@ -32,15 +33,15 @@ export default class Month extends Component {
       '七月', '八月', '九月', '十月', '十一月', '十二月'
     ],
     'en': [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      strings('Calender.January'), strings('Calender.February'), strings('Calender.March'), strings('Calender.April'), strings('Calender.May'),
+      strings('Calender.June'), strings('Calender.July'), strings('Calender.August'), strings('Calender.September'), strings('Calender.October'), strings('Calender.November'), strings('Calender.December'),
     ]
   }
-  _getMonthText () {
+  _getMonthText() {
     const {
       month,
       today,
-      i18n
+      i18n,
     } = this.props;
     let y = month.year();
     let m = month.month();
@@ -54,7 +55,7 @@ export default class Month extends Component {
       return month.format('YYYY年M月');
     }
   }
-  _getDayList (date) {
+  _getDayList(date) {
     let dayList;
     let month = date.month();
     let weekday = date.isoWeekday();
@@ -82,7 +83,7 @@ export default class Month extends Component {
       empty: date.clone().hour(1)
     }));
   }
-  _renderDayRow (dayList, index) {
+  _renderDayRow(dayList, index) {
     const {
       startDate,
       endDate,
@@ -95,25 +96,26 @@ export default class Month extends Component {
             date={item.date}
             empty={item.empty}
             {...this.props}
-            key={'day' + i}/>
+            key={'day' + i} />
         )}
       </View>
     );
   }
-  render () {
+  render() {
     const {
       month,
       today,
       color
     } = this.props;
-    let subColor = {color: color.subColor};
+    let subColor = { color: color.subColor };
+    let monthColor = { color: color.mainColor }
     let titleText = this._getMonthText();
     let dayList = this._getDayList(month.clone());
     let rowArray = new Array(dayList.length / 7).fill('');
     return (
       <View style={styles.month}>
         <View style={styles.monthTitle}>
-          <Text style={[styles.monthTitleText, subColor]}>{titleText}</Text>
+          <Text style={[styles.monthTitleText, monthColor]}>{titleText}</Text>
         </View>
         <View style={styles.days}>
           {rowArray.map((item, i) =>

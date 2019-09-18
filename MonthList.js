@@ -1,13 +1,9 @@
-/**
- * Created by TinySymphony on 2017-05-11.
- */
-
 import React, {PropTypes, Component} from 'react';
 import {
   View,
   Text,
   ListView,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import Moment from 'moment';
 import styles from './CalendarStyle';

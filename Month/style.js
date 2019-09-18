@@ -10,12 +10,13 @@ export default StyleSheet.create({
     paddingBottom: 10
   },
   monthTitle: {
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
+    alignSelf:'center',
   },
   monthTitleText: {
-    fontSize: 24,
+    fontSize: 15,
     lineHeight: 24,
-    fontWeight: '300'
+    // color:'rgb(110, 5, 64)'
   },
   dayRow: {
     flex: 1,

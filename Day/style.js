@@ -16,15 +16,18 @@ export default StyleSheet.create({
   },
   startContainer: {
     borderTopLeftRadius: 100,
-    borderBottomLeftRadius: 100
+    borderBottomLeftRadius: 100,
   },
   endContainer: {
     borderTopRightRadius: 100,
-    borderBottomRightRadius: 100
+    borderBottomRightRadius: 100,
   },
   today: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.40)'
+    backgroundColor:'rgb(246, 206, 229)',
+    // elevation:5
+
+    // borderWidth: 1,
+    // borderColor: 'rgba(255, 255, 255, 0.40)'
   },
   day: {
     width: dayWidth,
@@ -32,7 +35,7 @@ export default StyleSheet.create({
     borderRadius: dayWidth / 2,
     overflow: 'hidden',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   dayText: {
     fontSize: 16,
@@ -41,7 +44,7 @@ export default StyleSheet.create({
   },
   dayTextDisabled: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.54)',
+    color: 'rgb(225, 225, 225)',
     textAlign: 'center'
   }
 });
